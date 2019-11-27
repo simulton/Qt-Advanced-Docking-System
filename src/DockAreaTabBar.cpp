@@ -435,6 +435,13 @@ void CDockAreaTabBar::onCloseOtherTabsRequested()
 		if (Tab->isClosable() && !Tab->isHidden() && Tab != Sender)
 		{
 			closeTab(i);
+
+			// If the application code removes a widgets when it gets hidden,
+			// it will no longer be in the layout, and thus the index needs to
+			// be updated to not skip any tabs.
+			if (d->TabsLayout->indexOf(Tab) == -1) {
+			    i--;
+			}
 		}
 	}
 }
