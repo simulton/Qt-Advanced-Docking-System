@@ -275,6 +275,11 @@ CFloatingDockContainer::CFloatingDockContainer(CDockAreaWidget *DockArea) :
 #ifdef Q_OS_LINUX
     d->TitleBar->enableCloseButton(isClosable());
 #endif
+    auto TopLevelDockWidget = topLevelDockWidget();
+    if (TopLevelDockWidget)
+    {
+    	TopLevelDockWidget->emitTopLevelChanged(true);
+    }
 }
 
 //============================================================================
@@ -285,6 +290,11 @@ CFloatingDockContainer::CFloatingDockContainer(CDockWidget *DockWidget) :
 #ifdef Q_OS_LINUX
     d->TitleBar->enableCloseButton(isClosable());
 #endif
+    auto TopLevelDockWidget = topLevelDockWidget();
+    if (TopLevelDockWidget)
+    {
+    	TopLevelDockWidget->emitTopLevelChanged(true);
+    }
 }
 
 //============================================================================
@@ -373,6 +383,11 @@ void CFloatingDockContainer::closeEvent(QCloseEvent *event)
 void CFloatingDockContainer::hideEvent(QHideEvent *event)
 {
 	Super::hideEvent(event);
+    if (event->spontaneous())
+    {
+        return;
+    }
+
     // Prevent toogleView() events during restore state
     if (d->DockManager->isRestoringState())
     {
@@ -497,17 +512,9 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 	d->setState(DragState);
 	d->DragStartMousePosition = DragStartMousePos;
 #ifdef Q_OS_LINUX
-	// I have not found a way on Linux to display the floating widget behind the
-	// dock overlay. That means if the user drags this floating widget around,
-	// it is always painted in front of the dock overlay and dock overlay cross.
-	// and the user will not see the dock overlay. To work around this issue,
-	// the window opacity is set to 0.6 to make the dock overlay visible
-	// again. If someone has an idea, how to place the dragged floating widget
-	// behind the dock overlay, then a pull request would be welcome.
 	if (DraggingFloatingWidget == DragState)
 	{
-		setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
-		setWindowOpacity(0.6);
+        setAttribute(Qt::WA_X11NetWmWindowTypeDock, true);
 		d->MouseEventHandler = MouseEventHandler;
 		if (d->MouseEventHandler)
 		{
@@ -517,7 +524,6 @@ void CFloatingDockContainer::startFloating(const QPoint &DragStartMousePos,
 #endif
 	moveFloating();
 	show();
-
 }
 
 //============================================================================
@@ -583,7 +589,7 @@ void CFloatingDockContainer::onDockAreaCurrentChanged(int Index)
 }
 
 //============================================================================
-bool CFloatingDockContainer::restoreState(QXmlStreamReader &Stream,
+bool CFloatingDockContainer::restoreState(CDockingStateReader &Stream,
     bool Testing)
 {
 	if (!d->DockContainer->restoreState(Stream, Testing))
