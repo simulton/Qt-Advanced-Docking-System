@@ -59,6 +59,7 @@ class CDockWidgetTab;
 struct DockWidgetTabPrivate;
 struct DockAreaWidgetPrivate;
 class CIconProvider;
+class CDockComponentsFactory;
 
 /**
  * The central dock manager that maintains the complete docking system.
@@ -86,8 +87,9 @@ private:
 	friend class CDockWidgetTab;
 	friend struct DockAreaWidgetPrivate;
 	friend struct DockWidgetTabPrivate;
-	friend class CFloatingOverlay;
-	friend struct FloatingOverlayPrivate;
+	friend class CFloatingDragPreview;
+	friend struct FloatingDragPreviewPrivate;
+	friend class CDockAreaTitleBar;
 
 protected:
 	/**
@@ -145,7 +147,7 @@ public:
 	{
 		ActiveTabHasCloseButton = 0x0001,    //!< If this flag is set, the active tab in a tab area has a close button
 		DockAreaHasCloseButton = 0x0002,     //!< If the flag is set each dock area has a close button
-		DockAreaCloseButtonClosesTab = 0x0004,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete cock area
+		DockAreaCloseButtonClosesTab = 0x0004,//!< If the flag is set, the dock area close button closes the active tab, if not set, it closes the complete dock area
 		OpaqueSplitterResize = 0x0008, //!< See QSplitter::setOpaqueResize() documentation
 		XmlAutoFormattingEnabled = 0x0010,//!< If enabled, the XML writer automatically adds line-breaks and indentation to empty sections between elements (ignorable whitespace).
 		XmlCompressionEnabled = 0x0020,//!< If enabled, the XML output will be compressed and is not human readable anymore
@@ -156,19 +158,32 @@ public:
 		DragPreviewIsDynamic = 0x0400,///< If opaque undocking is disabled, this flag defines the behavior of the drag preview window, if this flag is enabled, the preview will be adjusted dynamically to the drop area
 		DragPreviewShowsContentPixmap = 0x0800,///< If opaque undocking is disabled, the created drag preview window shows a copy of the content of the dock widget / dock are that is dragged
 		DragPreviewHasWindowFrame = 0x1000,///< If opaque undocking is disabled, then this flag configures if the drag preview is frameless or looks like a real window
-		DefaultConfig = ActiveTabHasCloseButton
-		              | DockAreaHasCloseButton
-		              | OpaqueSplitterResize
-		              | XmlCompressionEnabled
-		              | OpaqueUndocking, ///< the default configuration
-		DefaultNonOpaqueConfig = ActiveTabHasCloseButton
-		              | DockAreaHasCloseButton
-		              | XmlCompressionEnabled
+		AlwaysShowTabs = 0x2000,///< If this option is enabled, the tab of a dock widget is always displayed - even if it is the only visible dock widget in a floating widget.
+		DockAreaHasUndockButton = 0x4000,     //!< If the flag is set each dock area has an undock button
+		DockAreaHasTabsMenuButton = 0x8000,     //!< If the flag is set each dock area has a tabs menu button
+		DockAreaHideDisabledButtons = 0x10000,    //!< If the flag is set disabled dock area buttons will not appear on the tollbar at all (enabling them will bring them back)
+		DockAreaDynamicTabsMenuButtonVisibility = 0x20000,     //!< If the flag is set dock area will disable a tabs menu button when there is only one tab in the area
+		FloatingContainerHasWidgetTitle = 0x40000,
+		FloatingContainerHasWidgetIcon = 0x80000,
+
+
+        DefaultDockAreaButtons = DockAreaHasCloseButton
+							   | DockAreaHasUndockButton
+		                       | DockAreaHasTabsMenuButton,///< default configuration of dock area title bar buttons
+
+		DefaultBaseConfig = DefaultDockAreaButtons
+		                  | ActiveTabHasCloseButton
+		                  | XmlCompressionEnabled
+		                  | FloatingContainerHasWidgetTitle,///< default base configuration settings
+
+        DefaultOpaqueConfig = DefaultBaseConfig
+		                    | OpaqueSplitterResize
+		                    | OpaqueUndocking, ///< the default configuration with opaque operations - this may cause issues if ActiveX or Qt 3D windows are involved
+
+		DefaultNonOpaqueConfig = DefaultBaseConfig
 		              | DragPreviewShowsContentPixmap, ///< the default configuration for non opaque operations
-		NonOpaqueWithWindowFrame = ActiveTabHasCloseButton
-		              | DockAreaHasCloseButton
-		              | XmlCompressionEnabled
-		              | DragPreviewShowsContentPixmap
+
+		NonOpaqueWithWindowFrame = DefaultNonOpaqueConfig
 		              | DragPreviewHasWindowFrame ///< the default configuration for non opaque operations that show a real window with frame
 	};
 	Q_DECLARE_FLAGS(ConfigFlags, eConfigFlag)
@@ -202,6 +217,11 @@ public:
 	 * Set a certain config flag
 	 */
 	static void setConfigFlag(eConfigFlag Flag, bool On = true);
+
+	/**
+	 * Returns true if the given config flag is set
+	 */
+	static bool testConfigFlag(eConfigFlag Flag);
 
 	/**
 	 * Returns the global icon provider.
@@ -281,7 +301,7 @@ public:
 	 * This function always return 0 because the main window is always behind
 	 * any floating widget
 	 */
-	virtual unsigned int zOrderIndex() const;
+	unsigned int zOrderIndex() const override;
 
 	/**
 	 * Saves the current state of the dockmanger and all its dock widgets
@@ -440,6 +460,20 @@ signals:
      * tooltips for the DockArea buttons.
      */
     void dockAreaCreated(CDockAreaWidget* DockArea);
+
+    /**
+     * This signal is emitted just before the given dock widget is removed
+     * from the
+     */
+    void dockWidgetAboutToBeRemoved(CDockWidget* DockWidget);
+
+    /**
+     * This signal is emitted if a dock widget has been removed with the remove
+     * removeDockWidget() function.
+     * If this signal is emitted, the dock widget has been removed from the
+     * docking system but it is not deleted yet.
+     */
+    void dockWidgetRemoved(CDockWidget* DockWidget);
 }; // class DockManager
 } // namespace ads
 //-----------------------------------------------------------------------------

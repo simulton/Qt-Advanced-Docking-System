@@ -61,19 +61,35 @@ class CFloatingWidgetTitleBar;
 class CDockingStateReader;
 
 /**
- * Pure virtual interface for floating widgets
+ * Pure virtual interface for floating widgets.
+ * This interface is used for opaque and non-opaque undocking. If opaque
+ * undocking is used, the a real CFloatingDockContainer widget will be created
  */
 class IFloatingWidget
 {
 public:
+	/**
+	 * Starts floating.
+	 * This function should get called typically from a mouse press event
+	 * handler
+	 */
 	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
         eDragState DragState, QWidget* MouseEventHandler) = 0;
 
 	/**
 	 * Moves the widget to a new position relative to the position given when
-	 * startFloating() was called
+	 * startFloating() was called.
+	 * This function should be called from a mouse mouve event handler to
+	 * move the floating widget on mouse move events.
 	 */
 	virtual void moveFloating() = 0;
+
+	/**
+	 * Tells the widget that to finish dragging if the mouse is released.
+	 * This function should be called from a mouse release event handler
+	 * to finish the dragging
+	 */
+	virtual void finishDragging() = 0;
 };
 
 
@@ -110,8 +126,8 @@ protected:
 	 * Use moveToGlobalPos() to move the widget to a new position
 	 * depending on the start position given in Pos parameter
 	 */
-	void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
-        eDragState DragState, QWidget* MouseEventHandler);
+	virtual void startFloating(const QPoint& DragStartMousePos, const QSize& Size,
+        eDragState DragState, QWidget* MouseEventHandler) override;
 
 	/**
 	 * Call this function to start dragging the floating widget
@@ -126,7 +142,7 @@ protected:
 	 * Call this function if you explicitly want to signal that dragging has
 	 * finished
 	 */
-	void finishDragging();
+	virtual void finishDragging() override;
 
 	/**
 	 * Call this function if you just want to initialize the position
@@ -141,7 +157,7 @@ protected:
 	 * Moves the widget to a new position relative to the position given when
 	 * startFloating() was called
 	 */
-	void moveFloating();
+	void moveFloating() override;
 
 	/**
 	 * Restores the state from given stream.
@@ -164,7 +180,6 @@ protected: // reimplements QWidget
 	virtual void closeEvent(QCloseEvent *event) override;
 	virtual void hideEvent(QHideEvent *event) override;
 	virtual void showEvent(QShowEvent *event) override;
-	virtual bool eventFilter(QObject *watched, QEvent *event) override;
 
 public:
 	using Super = QWidget;

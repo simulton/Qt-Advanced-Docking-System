@@ -47,8 +47,8 @@ class CDockManager;
 struct DockManagerPrivate;
 class CFloatingDockContainer;
 struct FloatingDockContainerPrivate;
-class CFloatingOverlay;
-struct FloatingOverlayPrivate;
+class CFloatingDragPreview;
+struct FloatingDragPreviewPrivate;
 class CDockingStateReader;
 
 /**
@@ -71,8 +71,8 @@ private:
 	friend class CFloatingDockContainer;
 	friend struct FloatingDockContainerPrivate;
 	friend class CDockWidget;
-	friend class CFloatingOverlay;
-	friend struct FloatingOverlayPrivate;
+	friend class CFloatingDragPreview;
+	friend struct FloatingDragPreviewPrivate;
 
 protected:
 	/**
@@ -129,14 +129,6 @@ protected:
 	 * area
 	 */
 	CDockAreaWidget* lastAddedDockAreaWidget(DockWidgetArea area) const;
-
-	/**
-	 * This function returns true if this dock area has only one single
-	 * visible dock widget.
-	 * A top level widget is a real floating widget. Only the isFloating()
-	 * function of top level widgets may returns true.
-	 */
-	bool hasTopLevelDockWidget() const;
 
 	/**
 	 * If hasSingleVisibleDockWidget() returns true, this function returns the
@@ -213,6 +205,14 @@ public:
 	 * If all dock widgets in a dock area are closed, the dock area will be closed
 	 */
 	QList<CDockAreaWidget*> openedDockAreas() const;
+
+    /**
+     * This function returns true if this dock area has only one single
+     * visible dock widget.
+     * A top level widget is a real floating widget. Only the isFloating()
+     * function of top level widgets may returns true.
+     */
+    bool hasTopLevelDockWidget() const;
 
 	/**
 	 * Returns the number of dock areas in this container

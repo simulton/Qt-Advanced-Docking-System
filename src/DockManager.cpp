@@ -58,7 +58,7 @@
 
 namespace ads
 {
-static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultConfig;
+static CDockManager::ConfigFlags StaticConfigFlags = CDockManager::DefaultOpaqueConfig;
 
 /**
  * Private data class of CDockManager class (pimpl)
@@ -205,6 +205,8 @@ bool DockManagerPrivate::checkFormat(const QByteArray &state, int version)
 bool DockManagerPrivate::restoreStateFromXml(const QByteArray &state,  int version,
 	bool Testing)
 {
+	Q_UNUSED(version);
+
     if (state.isEmpty())
     {
         return false;
@@ -409,7 +411,7 @@ CDockManager::CDockManager(QWidget *parent) :
 	d(new DockManagerPrivate(this))
 {
 	createRootSplitter();
-	QMainWindow* MainWindow = dynamic_cast<QMainWindow*>(parent);
+	QMainWindow* MainWindow = qobject_cast<QMainWindow*>(parent);
 	if (MainWindow)
 	{
 		MainWindow->setCentralWidget(this);
@@ -650,8 +652,10 @@ CDockWidget* CDockManager::findDockWidget(const QString& ObjectName) const
 //============================================================================
 void CDockManager::removeDockWidget(CDockWidget* Dockwidget)
 {
+	emit dockWidgetAboutToBeRemoved(Dockwidget);
 	d->DockWidgetsMap.remove(Dockwidget->objectName());
 	CDockContainerWidget::removeDockWidget(Dockwidget);
+	emit dockWidgetRemoved(Dockwidget);
 }
 
 //============================================================================
@@ -831,6 +835,12 @@ void CDockManager::setConfigFlags(const ConfigFlags Flags)
 void CDockManager::setConfigFlag(eConfigFlag Flag, bool On)
 {
 	internal::setFlag(StaticConfigFlags, Flag, On);
+}
+
+//===========================================================================
+bool CDockManager::testConfigFlag(eConfigFlag Flag)
+{
+    return configFlags().testFlag(Flag);
 }
 
 

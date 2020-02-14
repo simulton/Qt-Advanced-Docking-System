@@ -380,13 +380,14 @@ DockWidgetArea CDockOverlay::dropAreaUnderCursor() const
 		return Result;
 	}
 
-	CDockAreaWidget* DockArea = dynamic_cast<CDockAreaWidget*>(d->TargetWidget.data());
+	CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->TargetWidget.data());
 	if (!DockArea)
 	{
 		return Result;
 	}
 
-	if (DockArea->titleBarGeometry().contains(DockArea->mapFromGlobal(QCursor::pos())))
+	if (DockArea->allowedAreas().testFlag(CenterDockWidgetArea)
+	 && DockArea->titleBarGeometry().contains(DockArea->mapFromGlobal(QCursor::pos())))
 	{
 		return CenterDockWidgetArea;
 	}

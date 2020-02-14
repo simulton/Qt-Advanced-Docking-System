@@ -38,12 +38,13 @@ HEADERS += \
     DockWidgetTab.h \ 
     DockingStateReader.h \
     FloatingDockContainer.h \
-    FloatingOverlay.h \
+    FloatingDragPreview.h \
     DockOverlay.h \
     DockSplitter.h \
     DockAreaTitleBar.h \
     ElidingLabel.h \
-    IconProvider.h
+    IconProvider.h \
+    DockComponentsFactory.h 
 
 
 SOURCES += \
@@ -56,12 +57,13 @@ SOURCES += \
     DockingStateReader.cpp \
     DockWidgetTab.cpp \
     FloatingDockContainer.cpp \
-    FloatingOverlay.cpp \
+    FloatingDragPreview.cpp \
     DockOverlay.cpp \
     DockSplitter.cpp \
     DockAreaTitleBar.cpp \
     ElidingLabel.cpp \
-    IconProvider.cpp
+    IconProvider.cpp \
+    DockComponentsFactory.cpp
 
 
 unix {
