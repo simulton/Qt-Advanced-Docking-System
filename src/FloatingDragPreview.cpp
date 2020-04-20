@@ -21,6 +21,7 @@
 #include "DockManager.h"
 #include "DockContainerWidget.h"
 #include "DockOverlay.h"
+#include "DockComponentsFactory.h"
 
 namespace ads
 {
@@ -303,14 +304,14 @@ void CFloatingDragPreview::finishDragging()
 
 		if (DockWidget && DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable))
 		{
-			FloatingWidget = new CFloatingDockContainer(DockWidget);
+			FloatingWidget = componentsFactory()->createFloatingDockContainer(DockWidget);
 		}
 		else
 		{
 			CDockAreaWidget* DockArea = qobject_cast<CDockAreaWidget*>(d->Content);
 			if (DockArea->features().testFlag(CDockWidget::DockWidgetFloatable))
 			{
-				FloatingWidget = new CFloatingDockContainer(DockArea);
+				FloatingWidget = componentsFactory()->createFloatingDockContainer(DockArea);
 			}
 		}
 

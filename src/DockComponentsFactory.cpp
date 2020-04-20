@@ -17,6 +17,7 @@
 #include "DockAreaTitleBar.h"
 #include "DockWidget.h"
 #include "DockAreaWidget.h"
+#include "FloatingDockContainer.h"
 
 namespace ads
 {
@@ -41,6 +42,27 @@ CDockAreaTabBar* CDockComponentsFactory::createDockAreaTabBar(CDockAreaWidget* D
 CDockAreaTitleBar* CDockComponentsFactory::createDockAreaTitleBar(CDockAreaWidget* DockArea) const
 {
 	return new CDockAreaTitleBar(DockArea);
+}
+
+
+//============================================================================
+CFloatingDockContainer* CDockComponentsFactory::createFloatingDockContainer(CDockManager* DockManager) const
+{
+	return new CFloatingDockContainer(DockManager);
+}
+
+
+//============================================================================
+CFloatingDockContainer* CDockComponentsFactory::createFloatingDockContainer(CDockAreaWidget* DockArea) const
+{
+	return new CFloatingDockContainer(DockArea);
+}
+
+
+//============================================================================
+CFloatingDockContainer* CDockComponentsFactory::createFloatingDockContainer(CDockWidget* DockWidget) const
+{
+	return new CFloatingDockContainer(DockWidget);
 }
 
 
