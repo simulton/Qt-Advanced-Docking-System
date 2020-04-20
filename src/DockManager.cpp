@@ -53,7 +53,7 @@
 #include "DockAreaWidget.h"
 #include "IconProvider.h"
 #include "DockingStateReader.h"
-
+#include "DockComponentsFactory.h"
 
 
 namespace ads
@@ -173,7 +173,7 @@ bool DockManagerPrivate::restoreContainer(int Index, CDockingStateReader& stream
 	bool Result = false;
 	if (Index >= Containers.count())
 	{
-		CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(_this);
+		CFloatingDockContainer* FloatingWidget = componentsFactory()->createFloatingDockContainer(_this);
 		Result = FloatingWidget->restoreState(stream, Testing);
 	}
 	else
@@ -576,7 +576,7 @@ CFloatingDockContainer* CDockManager::addDockWidgetFloating(CDockWidget* Dockwid
 	}
 
 	Dockwidget->setDockManager(this);
-	CFloatingDockContainer* FloatingWidget = new CFloatingDockContainer(Dockwidget);
+	CFloatingDockContainer* FloatingWidget = componentsFactory()->createFloatingDockContainer(Dockwidget);
 	FloatingWidget->resize(Dockwidget->size());
 	if (isVisible())
 	{

@@ -19,6 +19,8 @@ class CDockAreaTitleBar;
 class CDockAreaTabBar;
 class CDockAreaWidget;
 class CDockWidget;
+class CFloatingDockContainer;
+class CDockManager;
 
 
 
@@ -57,6 +59,24 @@ public:
 	 * new CDockAreaTitleBar(DockArea).
 	 */
 	virtual CDockAreaTitleBar* createDockAreaTitleBar(CDockAreaWidget* DockArea) const;
+
+	/**
+	 * This default implementation just creates a floating dock container from the dock manager with
+	 * new CFloatingDockContainer(DockManager).
+	*/
+	virtual CFloatingDockContainer* createFloatingDockContainer(CDockManager* DockManager) const;
+
+	/**
+	 * This default implementation just creates a floating dock container from a dock area with
+	 * new CFloatingDockContainer(DockArea).
+	 */
+	virtual CFloatingDockContainer* createFloatingDockContainer(CDockAreaWidget* DockArea) const;
+
+	/**
+	 * This default implementation just creates a floating dock container from a dock widget with
+	 * new CFloatingDockContainer(DockWidget).
+	 */
+	virtual CFloatingDockContainer* createFloatingDockContainer(CDockWidget* DockWidget) const;
 
 	/**
 	 * Returns the default components factory

@@ -50,6 +50,7 @@
 #include "DockOverlay.h"
 #include "DockManager.h"
 #include "IconProvider.h"
+#include "DockComponentsFactory.h"
 
 #include <iostream>
 
@@ -139,7 +140,7 @@ struct DockWidgetTabPrivate
 	{
 		if (OpaqueUndocking)
 		{
-			return new CFloatingDockContainer(Widget);
+			return componentsFactory()->createFloatingDockContainer(Widget);
 		}
 		else
 		{

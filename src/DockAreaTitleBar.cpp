@@ -299,7 +299,7 @@ IFloatingWidget* DockAreaTitleBarPrivate::makeAreaFloating(const QPoint& Offset,
 	IFloatingWidget* FloatingWidget;
 	if (OpaqueUndocking)
 	{
-		FloatingWidget = FloatingDockContainer = new CFloatingDockContainer(DockArea);
+		FloatingWidget = FloatingDockContainer = componentsFactory()->createFloatingDockContainer(DockArea);
 	}
 	else
 	{
