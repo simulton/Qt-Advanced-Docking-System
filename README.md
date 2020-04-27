@@ -4,6 +4,9 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/qcfb3cy932jw9mpy/branch/master?svg=true)](https://ci.appveyor.com/project/githubuser0xFFFF/qt-advanced-docking-system/branch/master)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](gnu-lgpl-v2.1.md)
 
+[What's new](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System/releases/latest) •
+[Documentation](doc/user-guide.md)
+
 Qt Advanced Docking System lets you create customizable layouts using a full 
 featured window docking system similar to what is found in many popular 
 integrated development environments (IDEs) such as Visual Studio. 
@@ -24,30 +27,33 @@ of his docking system project.
 
 ### Overview
 
-- [Advanced Docking System for Qt](#advanced-docking-system-for-qt)
-  - [Features](#features)
-    - [Overview](#overview)
-    - [Docking everywhere - no central widget](#docking-everywhere---no-central-widget)
-    - [Docking inside floating windows](#docking-inside-floating-windows)
-    - [Grouped dragging](#grouped-dragging)
-    - [Perspectives for fast switching of the complete main window layout](#perspectives-for-fast-switching-of-the-complete-main-window-layout)
-    - [Opaque and non-opaque splitter resizing](#opaque-and-non-opaque-splitter-resizing)
-    - [Opaque and non-opaque undocking](#opaque-and-non-opaque-undocking)
-    - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
-    - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
-    - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
-  - [Tested Compatible Environments](#tested-compatible-environments)
-    - [Windows](#windows)
-    - [macOS](#macos)
-    - [Linux](#linux)
-  - [Build](#build)
-  - [Getting started / Example](#getting-started--example)
-  - [Developers](#developers)
-  - [License information](#license-information)
-  - [Alternative Docking System Implementations](#alternative-docking-system-implementations)
-    - [KDDockWidgets](#kddockwidgets)
-    - [QtitanDocking](#qtitandocking)
-  - [Donation](#donation)
+- [Features](#features)
+  - [Overview](#overview)
+  - [Docking everywhere - no central widget](#docking-everywhere---no-central-widget)
+  - [Docking inside floating windows](#docking-inside-floating-windows)
+  - [Grouped dragging](#grouped-dragging)
+  - [Perspectives for fast switching of the complete main window layout](#perspectives-for-fast-switching-of-the-complete-main-window-layout)
+  - [Opaque and non-opaque splitter resizing](#opaque-and-non-opaque-splitter-resizing)
+  - [Opaque and non-opaque undocking](#opaque-and-non-opaque-undocking)
+  - [Tab-menu for easy handling of many tabbed dock widgets](#tab-menu-for-easy-handling-of-many-tabbed-dock-widgets)
+  - [Many different ways to detach dock widgets](#many-different-ways-to-detach-dock-widgets)
+  - [Supports deletion of dynamically created dock widgets](#supports-deletion-of-dynamically-created-dock-widgets)
+- [Tested Compatible Environments](#tested-compatible-environments)
+  - [Windows](#windows)
+  - [macOS](#macos)
+  - [Linux](#linux)
+- [Build](#build)
+- [Getting started / Example](#getting-started--example)
+- [Developers](#developers)
+- [License information](#license-information)
+- [Alternative Docking System Implementations](#alternative-docking-system-implementations)
+  - [KDDockWidgets](#kddockwidgets)
+  - [QtitanDocking](#qtitandocking)
+- [Donation](#donation)
+- [Showcase](#showcase)
+  - [Qt Creator IDE](#qt-creator-ide)
+  - [Qt Design Studio](#qt-design-studio)
+  - [QmixElements](#qmixelements)
 
 ### Docking everywhere - no central widget
 
@@ -273,3 +279,28 @@ If this project help you reduce time to develop or if you just like it, you can 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=85R64TMMSY9T6">
   <img src="doc/donate.png" alt="Donate with PayPal" width="160"/>
 </a>
+
+## Showcase
+
+### [Qt Creator IDE](https://www.qt.io/development-tools)
+
+From version 4.12 on, Qt Creator uses the Advanced Docking Framework for its
+Qt Quick Designer. This improves the usability when using multiple screens.
+
+![Qt Creator](doc/qtcreator.png)
+
+### [Qt Design Studio](https://www.qt.io/ui-design-tools)
+
+Taken from the [Qt Blog](https://www.qt.io/blog/qt-design-studio-1.5-beta-released):
+
+> The most obvious change in [Qt Design Studio 1.5](https://www.qt.io/blog/qt-design-studio-1.5-beta-released) is the integration of dock widgets using the Qt Advanced Docking System. This allows the user to fully customize the workspace and also to undock any view into its own top level window. This especially improves the usability when using multiple screens.
+
+![Qt Design Studio](doc/qt_design_studio.png)
+
+### [QmixElements](https://www.cetoni.com/products/qmixelements/)
+
+The QmixElements software from [CETONI](https://www.cetoni.com) is a comprehensive, 
+plugin-based and modular laboratory automation software for controlling CETONI devices using a joint graphical user interface. The software features a powerful script system to automate processes. This [blog post](https://www.cetoni.com/blog/qmixelements-advanced-docking-system/) gives a nice overview about the use of the Qt
+Advanced Docking System in the QmixElements sofware.
+
+![QmixElements](doc/qmix_elements.png)

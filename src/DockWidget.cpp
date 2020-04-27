@@ -44,6 +44,7 @@
 #include <QDebug>
 #include <QToolBar>
 #include <QXmlStreamWriter>
+#include <QWindow>
 
 #include <QGuiApplication>
 #include <QScreen>
@@ -257,6 +258,11 @@ void CDockWidget::setToggleViewActionChecked(bool Checked)
 //============================================================================
 void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 {
+	if (d->Widget)
+	{
+		takeWidget();
+	}
+
 	QScrollArea* ScrollAreaWidget = qobject_cast<QScrollArea*>(widget);
 	if (ScrollAreaWidget || ForceNoScrollArea == InsertMode)
 	{
@@ -280,10 +286,26 @@ void CDockWidget::setWidget(QWidget* widget, eInsertMode InsertMode)
 //============================================================================
 QWidget* CDockWidget::takeWidget()
 {
-	d->ScrollArea->takeWidget();
-	d->Layout->removeWidget(d->Widget);
-	d->Widget->setParent(nullptr);
-    return d->Widget;
+	QWidget* w = nullptr;
+	if (d->ScrollArea)
+	{
+		d->Layout->removeWidget(d->ScrollArea);
+		w = d->ScrollArea->takeWidget();
+		delete d->ScrollArea;
+		d->ScrollArea = nullptr;
+	}
+	else if (d->Widget)
+	{
+		d->Layout->removeWidget(d->Widget);
+		w = d->Widget;
+		d->Widget = nullptr;
+	}
+
+	if (w)
+	{
+		w->setParent(nullptr);
+	}
+    return w;
 }
 
 
@@ -852,6 +874,91 @@ void CDockWidget::setTitleBarActions(QList<QAction*> actions)
 QList<QAction*> CDockWidget::titleBarActions() const
 {
 	return d->TitleBarActions;
+}
+
+
+//============================================================================
+void CDockWidget::showFullScreen()
+{
+	if (isFloating())
+	{
+		dockContainer()->floatingWidget()->showFullScreen();
+	}
+	else
+	{
+		Super::showFullScreen();
+	}
+}
+
+
+//============================================================================
+void CDockWidget::showNormal()
+{
+	if (isFloating())
+	{
+		dockContainer()->floatingWidget()->showNormal();
+	}
+	else
+	{
+		Super::showNormal();
+	}
+}
+
+
+//============================================================================
+bool CDockWidget::isFullScreen() const
+{
+	if (isFloating())
+	{
+		return dockContainer()->floatingWidget()->isFullScreen();
+	}
+	else
+	{
+		return Super::isFullScreen();
+	}
+}
+
+
+//============================================================================
+void CDockWidget::setAsCurrentTab()
+{
+	if (d->DockArea && !isClosed())
+	{
+		d->DockArea->setCurrentDockWidget(this);
+	}
+}
+
+
+//============================================================================
+bool CDockWidget::isTabbed() const
+{
+	return d->DockArea && (d->DockArea->openDockWidgetsCount() > 1);
+}
+
+
+
+//============================================================================
+bool CDockWidget::isCurrentTab() const
+{
+	return d->DockArea && (d->DockArea->currentDockWidget() == this);
+}
+
+
+//============================================================================
+void CDockWidget::raise()
+{
+	if (isClosed())
+	{
+		return;
+	}
+
+	setAsCurrentTab();
+	if (isInFloatingContainer())
+	{
+		auto FloatingWindow = window();
+		FloatingWindow->raise();
+		FloatingWindow->activateWindow();
+	}
 }
 
 

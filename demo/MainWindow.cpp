@@ -74,6 +74,7 @@
 #include "DockAreaTabBar.h"
 #include "FloatingDockContainer.h"
 #include "DockComponentsFactory.h"
+#include "StatusDialog.h"
 
 
 
@@ -169,7 +170,12 @@ static ads::CDockWidget* createCalendarDockWidget(QMenu* ViewMenu)
 	static int CalendarCount = 0;
 	QCalendarWidget* w = new QCalendarWidget();
 	ads::CDockWidget* DockWidget = new ads::CDockWidget(QString("Calendar %1").arg(CalendarCount++));
+	// The following lines are for testing the setWidget() and takeWidget()
+	// functionality
 	DockWidget->setWidget(w);
+	DockWidget->setWidget(w); // what happens if we set a widget if a widget is already set
+	DockWidget->takeWidget(); // we remove the widget
+	DockWidget->setWidget(w); // and set the widget again - there should be no error
 	DockWidget->setToggleViewActionMode(ads::CDockWidget::ActionModeShow);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/date_range.svg"));
 	ViewMenu->addAction(DockWidget->toggleViewAction());
@@ -261,6 +267,19 @@ static ads::CDockWidget* createTableWidget(QMenu* ViewMenu)
 	DockWidget->setWidget(w);
 	DockWidget->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
 	DockWidget->setMinimumSizeHintMode(ads::CDockWidget::MinimumSizeHintFromContent);
+	auto ToolBar = DockWidget->createDefaultToolBar();
+	auto Action = ToolBar->addAction(svgIcon(":/adsdemo/images/fullscreen.svg"), "Toggle Fullscreen");
+	QObject::connect(Action, &QAction::triggered, [=]()
+		{
+			if (DockWidget->isFullScreen())
+			{
+				DockWidget->showNormal();
+			}
+			else
+			{
+				DockWidget->showFullScreen();
+			}
+		});
 	ViewMenu->addAction(DockWidget->toggleViewAction());
 	return DockWidget;
 }
@@ -333,8 +352,6 @@ void MainWindowPrivate::createContent()
 	QMenu* ViewMenu = ui.menuView;
 	auto DockWidget = createCalendarDockWidget(ViewMenu);
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	auto SpecialDockArea = DockManager->addDockWidget(ads::LeftDockWidgetArea, DockWidget);
 
 	// For this Special Dock Area we want to avoid dropping on the center of it (i.e. we don't want this widget to be ever tabbified):
@@ -368,9 +385,6 @@ void MainWindowPrivate::createContent()
 	// We create a calendar widget and clear all flags to prevent the dock area
 	// from closing
 	DockWidget = createCalendarDockWidget(ViewMenu);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetClosable, false);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetMovable, false);
-	DockWidget->setFeature(ads::CDockWidget::DockWidgetFloatable, false);
 	DockWidget->setTabToolTip(QString("Tab ToolTip\nHodie est dies magna"));
 	auto DockArea = DockManager->addDockWidget(ads::CenterDockWidgetArea, DockWidget, TopDockArea);
 
@@ -380,6 +394,7 @@ void MainWindowPrivate::createContent()
 	CustomButton->setToolTip(QObject::tr("Create Editor"));
 	CustomButton->setIcon(svgIcon(":/adsdemo/images/plus.svg"));
 	CustomButton->setAutoRaise(true);
+
 	auto TitleBar = DockArea->titleBar();
 	int Index = TitleBar->indexOf(TitleBar->tabBar());
 	TitleBar->insertWidget(Index + 1, CustomButton);
@@ -398,8 +413,12 @@ void MainWindowPrivate::createContent()
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), RighDockArea);
 	DockManager->addDockWidget(ads::CenterDockWidgetArea, createLongTextLabelDockWidget(ViewMenu), BottomDockArea);
 
-    auto Action = ui.menuView->addAction(QString("Set %1 floating").arg(DockWidget->windowTitle()));
+    auto Action = ui.menuTests->addAction(QString("Set %1 Floating").arg(DockWidget->windowTitle()));
     DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setFloating()));
+    Action = ui.menuTests->addAction(QString("Set %1 As Current Tab").arg(DockWidget->windowTitle()));
+    DockWidget->connect(Action, SIGNAL(triggered()), SLOT(setAsCurrentTab()));
+    Action = ui.menuTests->addAction(QString("Raise %1").arg(DockWidget->windowTitle()));
+    DockWidget->connect(Action, SIGNAL(triggered()), SLOT(raise()));
 
 #ifdef Q_OS_WIN
     if (!DockManager->configFlags().testFlag(ads::CDockManager::OpaqueUndocking))
@@ -441,11 +460,18 @@ void MainWindowPrivate::createActions()
 	a->setToolTip("Creates floating dynamic dockable editor windows that are deleted on close");
 	a->setIcon(svgIcon(":/adsdemo/images/note_add.svg"));
 	_this->connect(a, SIGNAL(triggered()), SLOT(createEditor()));
+	ui.menuTests->addAction(a);
 
 	a = ui.toolBar->addAction("Create Table");
 	a->setToolTip("Creates floating dynamic dockable table with millions of entries");
 	a->setIcon(svgIcon(":/adsdemo/images/grid_on.svg"));
 	_this->connect(a, SIGNAL(triggered()), SLOT(createTable()));
+	ui.menuTests->addAction(a);
+
+	ui.menuTests->addSeparator();
+	a = ui.menuTests->addAction("Show Status Dialog");
+	_this->connect(a, SIGNAL(triggered()), SLOT(showStatusDialog()));
+	ui.menuTests->addSeparator();
 }
 
 
@@ -532,13 +558,14 @@ CMainWindow::CMainWindow(QWidget *parent) :
 	// uncomment the following line if you want floating container to show active dock widget's icon instead of always showing application icon
 	//CDockManager::setConfigFlag(CDockManager::FloatingContainerHasWidgetIcon, true);
 
+	// uncomment the following line if you want a central widget in the main dock container (the dock manager) without a titlebar
+	// If you enable this code, you can test it in the demo with the Calendar 0
+	// dock widget.
+	// CDockManager::setConfigFlag(CDockManager::HideSingleCentralWidgetTitleBar, true);
+
 	// Now create the dock manager and its content
 	d->DockManager = new CDockManager(this);
 
-	// uncomment the following line to have the old style where the dock
-	// area close button closes the active tab
-	// CDockManager::setConfigFlags({CDockManager::DockAreaHasCloseButton
-	//	| CDockManager::DockAreaCloseButtonClosesTab});
 	connect(d->PerspectiveComboBox, SIGNAL(activated(const QString&)),
 		d->DockManager, SLOT(openPerspective(const QString&)));
 
@@ -663,5 +690,13 @@ void CMainWindow::createTable()
 	DockWidget->setFeature(ads::CDockWidget::DockWidgetDeleteOnClose, true);
 	auto FloatingWidget = d->DockManager->addDockWidgetFloating(DockWidget);
     FloatingWidget->move(QPoint(40, 40));
+}
+
+
+//============================================================================
+void CMainWindow::showStatusDialog()
+{
+	CStatusDialog Dialog(d->DockManager);
+	Dialog.exec();
 }
 

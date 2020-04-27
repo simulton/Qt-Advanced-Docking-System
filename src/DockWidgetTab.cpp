@@ -241,7 +241,6 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 
     ADS_PRINT("startFloating");
 	DragState = DraggingState;
-	QSize Size = DockArea->size();
 	IFloatingWidget* FloatingWidget = nullptr;
 	bool OpaqueUndocking = CDockManager::configFlags().testFlag(CDockManager::OpaqueUndocking) ||
 		(DraggingFloatingWidget != DraggingState);
@@ -249,13 +248,16 @@ bool DockWidgetTabPrivate::startFloating(eDragState DraggingState)
 	// If section widget has multiple tabs, we take only one tab
 	// If it has only one single tab, we can move the complete
 	// dock area into floating widget
+	QSize Size;
 	if (DockArea->dockWidgetsCount() > 1)
 	{
 		FloatingWidget = createFloatingWidget(DockWidget, OpaqueUndocking);
+		Size = DockWidget->size();
 	}
 	else
 	{
 		FloatingWidget = createFloatingWidget(DockArea, OpaqueUndocking);
+		Size = DockArea->size();
 	}
 
     if (DraggingFloatingWidget == DraggingState)
@@ -578,6 +580,8 @@ void CDockWidgetTab::setText(const QString& title)
 	d->TitleLabel->setText(title);
 }
 
+
+//============================================================================
 bool CDockWidgetTab::isTitleElided() const
 {
 	return d->TitleLabel->isElided();
@@ -627,6 +631,13 @@ void CDockWidgetTab::onDockWidgetFeaturesChanged()
 	SizePolicy.setRetainSizeWhenHidden(Features.testFlag(CDockWidget::DockWidgetClosable)
 		&& d->testConfigFlag(CDockManager::RetainTabSizeWhenCloseButtonHidden));
 	d->CloseButton->setSizePolicy(SizePolicy);
+}
+
+
+//============================================================================
+void CDockWidgetTab::setElideMode(Qt::TextElideMode mode)
+{
+	d->TitleLabel->setElideMode(mode);
 }
 
 
