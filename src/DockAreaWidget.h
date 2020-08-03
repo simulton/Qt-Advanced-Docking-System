@@ -35,8 +35,8 @@
 #include "ads_globals.h"
 #include "DockWidget.h"
 
-class QXmlStreamWriter;
-class QAbstractButton;
+QT_FORWARD_DECLARE_CLASS(QXmlStreamWriter)
+QT_FORWARD_DECLARE_CLASS(QAbstractButton)
 
 namespace ads
 {
@@ -271,6 +271,12 @@ public:
 	 * Returns flags with all allowed drop areas of this particular dock area
 	 */
 	DockWidgetAreas allowedAreas() const;
+
+	/**
+	 * Will hide the title bar when set to true and there is only one
+	 * dock widget in this area
+	 */
+	void setHideSingleWidgetTitleBar(bool hide);
 
 	/**
 	 * Returns the title bar of this dock area

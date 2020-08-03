@@ -1,7 +1,7 @@
 %Import QtWidgets/QtWidgetsmod.sip
 
 %If (Qt_5_0_0 -)
-    
+
 %MappedType QMap<QString, ads::CDockWidget*>
         /TypeHint="Dict[QString, CDockWidget*]", TypeHintValue="{}"/
 {
@@ -133,6 +133,8 @@ protected:
 	void removeDockContainer(ads::CDockContainerWidget* DockContainer /TransferBack/);
 	ads::CDockOverlay* containerOverlay() const;
 	ads::CDockOverlay* dockAreaOverlay() const;
+    void notifyWidgetOrAreaRelocation(QWidget* RelocatedWidget);
+    void notifyFloatingWidgetDrop(ads::CFloatingDockContainer* FloatingWidget);
 
     virtual void showEvent(QShowEvent *event);
 
@@ -165,12 +167,14 @@ public:
 		DockAreaDynamicTabsMenuButtonVisibility,
 		FloatingContainerHasWidgetTitle,
 		FloatingContainerHasWidgetIcon,
+		HideSingleCentralWidgetTitleBar,
+        FocusHighlighting,
+        EqualSplitOnInsertion,
         DefaultDockAreaButtons,
 		DefaultBaseConfig,
         DefaultOpaqueConfig,
 		DefaultNonOpaqueConfig,
 		NonOpaqueWithWindowFrame,
-		HideSingleCentralWidgetTitleBar,
 	};
     typedef QFlags<ads::CDockManager::eConfigFlag> ConfigFlags;
 
@@ -194,8 +198,8 @@ public:
 	const QList<ads::CDockContainerWidget*> dockContainers() const;
 	const QList<ads::CFloatingDockContainer*> floatingWidgets() const;
 	unsigned int zOrderIndex() const;
-	QByteArray saveState(int version = 1) const;
-	bool restoreState(const QByteArray &state, int version = 1);
+	QByteArray saveState(int version = 0) const;
+	bool restoreState(const QByteArray &state, int version = 0);
 	void addPerspective(const QString& UniquePrespectiveName);
 	void removePerspective(const QString& Name);
 	void removePerspectives(const QStringList& Names);
@@ -211,6 +215,7 @@ public:
 
 public slots:
 	void openPerspective(const QString& PerspectiveName);
+    void setDockWidgetFocused(ads::CDockWidget* DockWidget);
 
 signals:
 	void perspectiveListChanged();
@@ -219,10 +224,11 @@ signals:
     void stateRestored();
     void openingPerspective(const QString& PerspectiveName);
     void perspectiveOpened(const QString& PerspectiveName);
-	void floatingWidgetCreated(CFloatingDockContainer* FloatingWidget);
-    void dockAreaCreated(ads::CDockAreaWidget* DockArea);
-    void dockWidgetAboutToBeRemoved(ads::CDockWidget* DockWidget);
-    void dockWidgetRemoved(ads::CDockWidget* DockWidget);
+	void floatingWidgetCreated(ads::CFloatingDockContainer*);
+    void dockAreaCreated(ads::CDockAreaWidget*);
+    void dockWidgetAboutToBeRemoved(ads::CDockWidget*);
+    void dockWidgetRemoved(ads::CDockWidget*);
+    void focusedDockWidgetChanged(ads::CDockWidget*, ads::CDockWidget*);
 };
 
 };
