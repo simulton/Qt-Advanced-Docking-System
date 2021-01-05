@@ -170,6 +170,8 @@ public:
 		HideSingleCentralWidgetTitleBar,
         FocusHighlighting,
         EqualSplitOnInsertion,
+        FloatingContainerForceNativeTitleBar,
+        FloatingContainerForceQWidgetTitleBar,
         DefaultDockAreaButtons,
 		DefaultBaseConfig,
         DefaultOpaqueConfig,
@@ -206,12 +208,17 @@ public:
 	QStringList perspectiveNames() const;
 	void savePerspectives(QSettings& Settings) const;
 	void loadPerspectives(QSettings& Settings);
+    CDockWidget* centralWidget() const;
+    CDockAreaWidget* setCentralWidget(CDockWidget* widget /Transfer/);
 	QAction* addToggleViewActionToMenu(QAction* ToggleViewAction /Transfer/,
 		const QString& Group = QString(), const QIcon& GroupIcon = QIcon());
 	QMenu* viewMenu() const;
 	void setViewMenuInsertionOrder(ads::CDockManager::eViewMenuInsertionOrder Order);
 	bool isRestoringState() const;
 	static int startDragDistance();
+    ads::CDockWidget* focusedDockWidget() const;
+    QList<int> splitterSizes(ads::CDockAreaWidget *ContainedArea) const;
+    void setSplitterSizes(ads::CDockAreaWidget *ContainedArea, const QList<int>& sizes);
 
 public slots:
 	void openPerspective(const QString& PerspectiveName);
@@ -226,6 +233,7 @@ signals:
     void perspectiveOpened(const QString& PerspectiveName);
 	void floatingWidgetCreated(ads::CFloatingDockContainer*);
     void dockAreaCreated(ads::CDockAreaWidget*);
+    void dockWidgetAdded(ads::CDockWidget* DockWidget);
     void dockWidgetAboutToBeRemoved(ads::CDockWidget*);
     void dockWidgetRemoved(ads::CDockWidget*);
     void focusedDockWidgetChanged(ads::CDockWidget*, ads::CDockWidget*);
